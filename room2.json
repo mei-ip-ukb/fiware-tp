@@ -1,0 +1,14 @@
+[
+    {
+        "id": "Room2",
+        "type": "Room",
+        "humidity": {
+            "type": "Integer",
+            "value": "55"
+        },
+        "temperature": {
+            "type": "Float",
+            "value": "19.5"
+        }
+    }
+]
