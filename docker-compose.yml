@@ -1,0 +1,61 @@
+services:
+  mongo:
+    image: mongo:4.4
+    container_name: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  orion:
+    image: fiware/orion
+    container_name: orion
+    depends_on:
+      - mongo
+    ports:
+      - "1026:1026"
+    command: -dbURI mongodb://mongo:27017
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: fiware
+      MYSQL_USER: fiware
+      MYSQL_PASSWORD: fiware
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  cygnus:
+    image: fiware/cygnus-ngsi
+    container_name: cygnus
+    depends_on:
+      - mysql
+    environment:
+      - CYGNUS_LOG_LEVEL=DEBUG
+      - CYGNUS_MYSQL_HOST=mysql
+      - CYGNUS_MYSQL_USER=fiware
+      - CYGNUS_MYSQL_PASS=fiware
+      - CYGNUS_MYSQL_PORT=3306
+      - CYGNUS_MYSQL_DB=fiware
+    ports:
+      - "5050:5050"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+
+volumes:
+  mongo_data:
+  mysql_data:
+  grafana_data:
